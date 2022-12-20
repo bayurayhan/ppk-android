@@ -1,4 +1,3 @@
 <resources>
     <string name="app_name">UAS PPK</string>
-    <string name="host">http://192.168.1.4:8000</string>
 </resources>

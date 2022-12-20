@@ -17,6 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
     private static Retrofit instance;
     private static Retrofit authInstance;
+    private static final String BASEURL = "http://192.168.1.4:8000";
 
     private RetrofitClient() {
     }
@@ -26,7 +27,7 @@ public class RetrofitClient {
         if (instance == null) {
             instance = new Retrofit.Builder()
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl(context.getString(R.string.host))
+                    .baseUrl(BASEURL)
                     .build();
         }
         return instance;
@@ -51,7 +52,7 @@ public class RetrofitClient {
 
         authInstance = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(context.getString(R.string.host))
+                .baseUrl(BASEURL)
                 .client(client)
                 .build();
         return authInstance;
