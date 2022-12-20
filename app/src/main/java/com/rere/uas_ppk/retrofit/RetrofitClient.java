@@ -3,6 +3,8 @@ package com.rere.uas_ppk.retrofit;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.rere.uas_ppk.R;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -20,11 +22,11 @@ public class RetrofitClient {
     }
 
 
-    public static Retrofit getInstance() {
+    public static Retrofit getInstance(Context context) {
         if (instance == null) {
             instance = new Retrofit.Builder()
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("http://192.168.1.4:8000/")
+                    .baseUrl(context.getString(R.string.host))
                     .build();
         }
         return instance;
@@ -49,7 +51,7 @@ public class RetrofitClient {
 
         authInstance = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://192.168.1.4:8000/")
+                .baseUrl(context.getString(R.string.host))
                 .client(client)
                 .build();
         return authInstance;

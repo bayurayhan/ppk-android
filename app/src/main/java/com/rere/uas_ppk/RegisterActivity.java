@@ -40,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerButton = findViewById(R.id.registerButton);
 
-        UserApi userApi = RetrofitClient.getInstance().create(UserApi.class);
+        UserApi userApi = RetrofitClient.getInstance(this).create(UserApi.class);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     // Get the JSON response body
                                     ResponseBody errorBody = response.errorBody();
                                     try {
-                                        Converter<ResponseBody, ErrorResponse> converter = RetrofitClient.getInstance().responseBodyConverter(ErrorResponse.class, ErrorResponse.class.getAnnotations());
+                                        Converter<ResponseBody, ErrorResponse> converter = RetrofitClient.getInstance(RegisterActivity.this).responseBodyConverter(ErrorResponse.class, ErrorResponse.class.getAnnotations());
 
                                         ErrorResponse errorResponse = converter.convert(errorBody);
 

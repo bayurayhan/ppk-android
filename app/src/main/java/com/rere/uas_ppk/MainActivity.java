@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         editor = preferences.edit();
-        userApi = RetrofitClient.getInstance().create(UserApi.class);
+        userApi = RetrofitClient.getInstance(this).create(UserApi.class);
 
         checkIfLogin();
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                                     // Get the JSON response body
                                     ResponseBody errorBody = response.errorBody();
                                     try {
-                                        Converter<ResponseBody, ErrorResponse> converter = RetrofitClient.getInstance().responseBodyConverter(ErrorResponse.class, ErrorResponse.class.getAnnotations());
+                                        Converter<ResponseBody, ErrorResponse> converter = RetrofitClient.getInstance(MainActivity.this).responseBodyConverter(ErrorResponse.class, ErrorResponse.class.getAnnotations());
 
                                         ErrorResponse errorResponse = converter.convert(errorBody);
 
