@@ -12,20 +12,25 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.rere.uas_ppk.HomeActivity;
 import com.rere.uas_ppk.PostActivity;
 import com.rere.uas_ppk.R;
 import com.rere.uas_ppk.model.Post;
+import com.rere.uas_ppk.model.User;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
-public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerViewAdapter.ViewHolder> {
+public class UserProfileRecyclerViewAdapter extends RecyclerView.Adapter<UserProfileRecyclerViewAdapter.ViewHolder> {
 
-    protected ArrayList<Post> posts = new ArrayList<>();
-    protected Context context;
+    List<Post> posts;
+    Context context;
 
-    public PostRecyclerViewAdapter(Context context) {
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public UserProfileRecyclerViewAdapter(Context context) {
+        this.posts = new ArrayList<>();
         this.context = context;
     }
 
@@ -40,11 +45,6 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(posts.get(position));
-
-    }
-
-    public void setPosts(ArrayList<Post> posts) {
-        this.posts = posts;
     }
 
     @Override
@@ -52,7 +52,8 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         return posts.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
         TextView titleTextView, authorTextView;
         CardView postCardView;
 
@@ -74,6 +75,4 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
             });
         }
     }
-
-
 }

@@ -2,17 +2,11 @@ package com.rere.uas_ppk.retrofit.response;
 
 import com.rere.uas_ppk.model.Post;
 
-public class AddPostResponse {
+public class GetPostResponse {
     private String message;
-    private Post data;
 
     public String getMessage() {
         return message;
-    }
-
-    public AddPostResponse(String message, Post data) {
-        this.message = message;
-        this.data = data;
     }
 
     public void setMessage(String message) {
@@ -26,4 +20,13 @@ public class AddPostResponse {
     public void setData(Post data) {
         this.data = data;
     }
+
+    public GetPostResponse(String message, Post data) {
+        this.message = message;
+        this.data = data;
+    }
+
+    private Post data;
+
+
 }

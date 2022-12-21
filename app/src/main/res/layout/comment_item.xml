@@ -7,7 +7,7 @@
     android:layout_margin="5dp"
     android:elevation="8dp"
     app:cardCornerRadius="4dp"
-    android:id="@+id/postCardView">
+    android:id="@+id/commentCardView">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/JudulTextView"
+            android:id="@+id/isiTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="3dp"

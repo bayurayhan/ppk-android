@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
@@ -21,6 +23,7 @@ import com.rere.uas_ppk.model.User;
 import com.rere.uas_ppk.retrofit.RetrofitClient;
 import com.rere.uas_ppk.retrofit.apiInterface.PostApi;
 import com.rere.uas_ppk.retrofit.response.AllPostResponse;
+import com.rere.uas_ppk.util.BottomNavigationUtil;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -38,84 +41,110 @@ public class HomeActivity extends AppCompatActivity {
     private FloatingActionButton mulaiDiskusiButton;
     private RecyclerView postRV;
     private BottomNavigationView navigation;
+    protected PostRecyclerViewAdapter adapter;
 
-    public void logout() {
-        SharedPreferences sharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE);
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.remove("token");
-
-        editor.apply();
-
-        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        adapter = new PostRecyclerViewAdapter(this);
+
         mulaiDiskusiButton = findViewById(R.id.mulaiDiskusiButton);
         navigation = findViewById(R.id.bottomNavbarMenu);
-        navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+
+        BottomNavigationUtil bottomNavigation = new BottomNavigationUtil(this, navigation);
+        bottomNavigation.setup();
+
+        mulaiDiskusiButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.menu_logout) {
-                    logout();
-                }
-                return true;
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, CreatePostActivity.class));
             }
         });
 
+        RetrofitClient.getAuthInstance(this).create(PostApi.class)
+                .allPosts().enqueue(new Callback<AllPostResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<AllPostResponse> call, @NonNull Response<AllPostResponse> response) {
+                        if (!response.isSuccessful()) {
+                            try {
+                                assert response.errorBody() != null;
+                                System.out.println(response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(HomeActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            assert response.body() != null;
+                            postRV = findViewById(R.id.postRecyclerView);
 
-        PostApi postApi = RetrofitClient.getAuthInstance(this).create(PostApi.class);
+                            List<Post> postsList = response.body().getData();
 
-        postApi.allPosts().enqueue(new Callback<AllPostResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<AllPostResponse> call, @NonNull Response<AllPostResponse> response) {
-                if (!response.isSuccessful()) {
-                    try {
-                        assert response.errorBody() != null;
-                        System.out.println(response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                            ArrayList<Post> posts = new ArrayList<>(postsList);
+
+                            adapter.setPosts(posts);
+                            adapter.notifyDataSetChanged();
+
+                            postRV.setAdapter(adapter);
+                            LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this);
+                            postRV.setLayoutManager(layoutManager);
+
+                        }
+
+                        Toast.makeText(HomeActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(HomeActivity.this, "Error!", Toast.LENGTH_SHORT).show();
-                } else {
-                    assert response.body() != null;
-                    postRV = findViewById(R.id.postRecyclerView);
 
-                    List<Post> postsList = response.body().getData();
+                    @Override
+                    public void onFailure(Call<AllPostResponse> call, Throwable t) {
+                        Toast.makeText(HomeActivity.this, "Server Error!", Toast.LENGTH_SHORT).show();
+                        Log.d("App", t.getMessage());
 
-                    ArrayList<Post> posts = new ArrayList<Post>(postsList);
+                    }
+                });
 
-//                    posts.sort(new Comparator<Post>() {
-//                        @Override
-//                        public int compare(Post o1, Post o2) {
-//                            return o1.getUpdated_at() > o2.getUpdated_at();
-//                        }
-//                    });
+    }
 
-                    PostRecyclerViewAdapter adapter = new PostRecyclerViewAdapter(posts);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-                    postRV.setAdapter(adapter);
+        if (getIntent().hasExtra("refresh")) {
+            RetrofitClient.getAuthInstance(this).create(PostApi.class)
+                    .allPosts().enqueue(new Callback<AllPostResponse>() {
+                        @Override
+                        public void onResponse(@NonNull Call<AllPostResponse> call, @NonNull Response<AllPostResponse> response) {
+                            if (!response.isSuccessful()) {
+                                try {
+                                    assert response.errorBody() != null;
+                                    System.out.println(response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Toast.makeText(HomeActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                assert response.body() != null;
+                                postRV = findViewById(R.id.postRecyclerView);
 
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this);
-                    postRV.setLayoutManager(layoutManager);
-                    Toast.makeText(HomeActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                }
+                                List<Post> postsList = response.body().getData();
 
-            }
+                                ArrayList<Post> posts = new ArrayList<>(postsList);
 
-            @Override
-            public void onFailure(Call<AllPostResponse> call, Throwable t) {
+                                adapter.setPosts(posts);
+                                adapter.notifyDataSetChanged();
+                            }
 
-            }
-        });
+                        }
 
+                        @Override
+                        public void onFailure(Call<AllPostResponse> call, Throwable t) {
+                            Toast.makeText(HomeActivity.this, "Server Error!", Toast.LENGTH_SHORT).show();
+                            Log.d("App", t.getMessage());
 
+                        }
+                    });
+        }
     }
 }

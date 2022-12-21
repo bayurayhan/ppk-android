@@ -1,29 +1,29 @@
 package com.rere.uas_ppk.retrofit.response;
 
-import com.rere.uas_ppk.model.Post;
+import com.rere.uas_ppk.model.User;
 
-public class AddPostResponse {
+public class EditProfileResponse {
     private String message;
-    private Post data;
+    private User data;
 
     public String getMessage() {
         return message;
-    }
-
-    public AddPostResponse(String message, Post data) {
-        this.message = message;
-        this.data = data;
     }
 
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public Post getData() {
+    public User getData() {
         return data;
     }
 
-    public void setData(Post data) {
+    public void setData(User data) {
+        this.data = data;
+    }
+
+    public EditProfileResponse(String message, User data) {
+        this.message = message;
         this.data = data;
     }
 }
