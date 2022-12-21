@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.rere.uas_ppk.retrofit.RetrofitClient;
 import com.rere.uas_ppk.retrofit.apiInterface.UserApi;
@@ -37,6 +39,8 @@ public class SplashActivity extends AppCompatActivity {
                                     finish();
                                 }
                             }, 3000);
+
+                            Log.d("App", "Response is successfull!");
                         } else {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -47,12 +51,14 @@ public class SplashActivity extends AppCompatActivity {
                                     finish();
                                 }
                             }, 3000);
+                            Log.d("App", "Response is failed!");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<GetProfileResponse> call, Throwable t) {
-
+                        Toast.makeText(SplashActivity.this, "Err: Cannot connect to server!", Toast.LENGTH_SHORT).show();
+                        Log.d("App", "Retrofit error: " + t.getMessage());
                     }
                 });
     }
